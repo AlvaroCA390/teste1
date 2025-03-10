@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabela Interativa</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .button-container button {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        table {
+            margin-top: 20px;
+        }
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0,0,0,.05);
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(0,0,0,.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-4">Tabela de Bosses</h1>
+        <div class="button-container">
+            <button class="btn btn-secondary" onclick="toggleSelection(1)">1</button>
+            <button class="btn btn-secondary" onclick="toggleSelection(2)">2</button>
+            <button class="btn btn-secondary" onclick="toggleSelection(3)">3</button>
+            <button class="btn btn-secondary" onclick="toggleSelection(4)">4</button>
+            <button class="btn btn-secondary" onclick="toggleSelection(5)">5</button>
+            <button class="btn btn-secondary" onclick="toggleSelection(6)">6</button>
+            <button class="btn btn-secondary" onclick="toggleSelection(7)">7</button>
+        </div>
+        <button class="btn btn-primary" onclick="mostrarDados()">Mostrar Dados</button>
+
+        <h2 class="mt-4">Resumo</h2>
+        <table id="resumo" class="table table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Boss</th>
+                    <th>Cobre</th>
+                    <th>Darksteal</th>
+                    <th>Energia</th>
+                    <th>Ouro</th>
+                    <th>Estátua</th>
+                    <th>Repetição</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const bosses = {
+            1: { boss: 'Raposa', cobre: 2500, darksteal: 125000, energia: 125000, ouro: 1000, estatua: 2, repeticao: 4 },
+            2: { boss: 'Touro', cobre: 5000, darksteal: 250000, energia: 250000, ouro: 1200, estatua: 4, repeticao: 8 },
+            3: { boss: 'Pedra', cobre: 7500, darksteal: 375000, energia: 375000, ouro: 1400, estatua: 6, repeticao: 12 },
+            4: { boss: 'Lua', cobre: 10000, darksteal: 500000, energia: 500000, ouro: 1600, estatua: 8, repeticao: 16 },
+            5: { boss: 'Infernal', cobre: 12500, darksteal: 625000, energia: 625000, ouro: 1800, estatua: 10, repeticao: 20 },
+            6: { boss: 'Dragão', cobre: 15000, darksteal: 750000, energia: 750000, ouro: 2000, estatua: 12, repeticao: 24 },
+            7: { boss: 'Imperador', cobre: 17500, darksteal: 875000, energia: 875000, ouro: 2200, estatua: 14, repeticao: 28 }
+        };
+
+        const selectedIds = new Set();
+
+        function toggleSelection(id) {
+            if (selectedIds.has(id)) {
+                selectedIds.delete(id);
+                document.querySelector(`button[onclick="toggleSelection(${id})"]`).classList.remove('btn-success');
+                document.querySelector(`button[onclick="toggleSelection(${id})"]`).classList.add('btn-secondary');
+            } else {
+                selectedIds.add(id);
+                document.querySelector(`button[onclick="toggleSelection(${id})"]`).classList.remove('btn-secondary');
+                document.querySelector(`button[onclick="toggleSelection(${id})"]`).classList.add('btn-success');
+            }
+        }
+
+        function formatNumber(num) {
+            return num.toLocaleString('pt-BR');
+        }
+
+        function mostrarDados() {
+            const ids = Array.from(selectedIds);
+            const resumo = ids.reduce((acc, id) => {
+                const boss = bosses[id];
+                acc.cobre += boss.cobre;
+                acc.darksteal += boss.darksteal;
+                acc.energia += boss.energia;
+                acc.ouro += boss.ouro;
+                acc.estatua += boss.estatua;
+                acc.repeticao += boss.repeticao;
+                return acc;
+            }, { cobre: 0, darksteal: 0, energia: 0, ouro: 0, estatua: 0, repeticao: 0 });
+
+            const tbody = document.getElementById('resumo').querySelector('tbody');
+            tbody.innerHTML = ids.map(id => {
+                const boss = bosses[id];
+                return `<tr>
+                    <td>${id}</td>
+                    <td>${boss.boss}</td>
+                    <td>${formatNumber(boss.cobre)}</td>
+                    <td>${formatNumber(boss.darksteal)}</td>
+                    <td>${formatNumber(boss.energia)}</td>
+                    <td>${formatNumber(boss.ouro)}</td>
+                    <td>${formatNumber(boss.estatua)}</td>
+                    <td>${formatNumber(boss.repeticao)}</td>
+                </tr>`;
+            }).join('') + `<tr class="font-weight-bold">
+                <td colspan="2">Total</td>
+                <td>${formatNumber(resumo.cobre)}</td>
+                <td>${formatNumber(resumo.darksteal)}</td>
+                <td>${formatNumber(resumo.energia)}</td>
+                <td>${formatNumber(resumo.ouro)}</td>
+                <td>${formatNumber(resumo.estatua)}</td>
+                <td>${formatNumber(resumo.repeticao)}</td>
+            </tr>`;
+        }
+    </script>
+</body>
+</html>
